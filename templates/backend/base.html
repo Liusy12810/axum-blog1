@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>后台管理-AXUM.RS博客</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div
+            class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">{% block title%}标题{%endblock%}</h1>
+            {% block toolbar %}{%endblock%}
+        </div>
+        <div>
+            {% block msg%} {%endblock%}
+            {%block content%}内容{%endblock%}
+        </div>
+    </main>
+</body>
+
+</html>
