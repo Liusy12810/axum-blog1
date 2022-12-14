@@ -1,6 +1,6 @@
 //! # paginate
-//! 
-//! 
+//!
+//!
 
 use serde::{Deserialize, Serialize};
 
@@ -26,7 +26,23 @@ impl<T> Paginate<T> {
             page_size,
             total_records,
             total_pages,
-            data
+            data,
         }
+    }
+
+    pub fn has_prev(&self) -> bool {
+        self.page > 0
+    }
+    
+    pub fn last_page(&self) -> i64 {
+        self.total_pages - 1
+    }
+    
+    pub fn has_next(&self) -> bool {
+        (self.page as i64) < self.last_page()
+    }
+    
+    pub fn is_active(&self, page: &i64) -> bool {
+        (self.page as i64) == *page
     }
 }

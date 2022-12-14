@@ -35,7 +35,7 @@ pub async fn index(
 ) -> Result<HtmlView> {
     let handler_name = "backend/category/index";
     let client = get_client(&state).await.map_err(log_error(handler_name))?;
-    let list = category::list(&client).await.map_err(log_error(handler_name))?;
+    let list = category::list(&client, false).await.map_err(log_error(handler_name))?;
     let tmpl = Index { list, msg: args.msg };
     render(tmpl).map_err(log_error(handler_name))
 }

@@ -2,8 +2,6 @@
 //!
 //!
 //!
-
-use crate::{error::AppError, Result};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use tokio_postgres::{
     types::{FromSqlOwned, ToSql},
@@ -12,7 +10,9 @@ use tokio_postgres::{
 
 pub mod category;
 pub mod paginate;
+pub mod topic;
 
+use crate::{error::AppError, Result};
 use paginate::Paginate;
 
 const DEFAULT_PAGE_SIZE: u8 = 32;

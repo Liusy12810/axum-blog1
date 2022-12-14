@@ -9,6 +9,7 @@ pub mod handler;
 pub mod model;
 pub mod form;
 pub mod config;
+pub mod md;
 
 pub type Result<T> = std::result::Result<T, error::AppError>;
 
