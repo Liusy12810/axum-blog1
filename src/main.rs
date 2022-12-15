@@ -42,7 +42,7 @@ async fn main() {
         .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
-    tracing::info!("Process terminated. Bye~");
+    println!("Process terminated. Bye~");
 }
 
 async fn shutdown_signal() {

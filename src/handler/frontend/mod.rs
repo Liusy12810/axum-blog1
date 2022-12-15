@@ -16,7 +16,7 @@ pub fn router() -> Router {
         .route("/auth", get(login_ui).post(login))
         .route("/logout", get(logout))
         .route("/category/:id", get(topic::list))
-        .route("/topic/:id/detail", get(topic::detail))
+        .route("/topic/:id", get(topic::detail))
         .route("/dabian", get(z_dabian::dabian))
 }
 

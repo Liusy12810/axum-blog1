@@ -10,5 +10,6 @@ fn get_parser(md: &str) -> Parser {
 pub fn to_html(md: &str) -> String {
     let mut out_html = String::new();
     html::push_html(&mut out_html, get_parser(md));
+    println!("OUT HTML: {}", out_html);
     out_html
 }
