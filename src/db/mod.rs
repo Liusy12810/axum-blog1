@@ -11,6 +11,7 @@ use tokio_postgres::{
 pub mod category;
 pub mod paginate;
 pub mod topic;
+pub mod admin;
 
 use crate::{error::AppError, Result};
 use paginate::Paginate;

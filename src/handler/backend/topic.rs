@@ -7,7 +7,7 @@ use axum::extract::{Extension, Form, Query, Path};
 
 use crate::{
     db::{category, topic},
-    form::{CreatTopic, EditTopic},
+    form::{CreateTopic, EditTopic},
     handler::{get_client, log_error, render, HtmlView, RedirectView, redirect},
     view::backend::topic::{Add, Index, Edit},
     AppState, Result,
@@ -20,7 +20,7 @@ pub async fn add_ui(Extension(state): Extension<Arc<AppState>>) -> Result<HtmlVi
     let client = get_client(&state)
         .await
         .map_err(log_error(handler_name))?;
-    let cats = category::list(&client, false)
+    let cats = category::list(&client)
         .await
         .map_err(log_error(handler_name))?;
     let tmpl = Add { cats };
@@ -29,7 +29,7 @@ pub async fn add_ui(Extension(state): Extension<Arc<AppState>>) -> Result<HtmlVi
 
 pub async fn add(
     Extension(state): Extension<Arc<AppState>>,
-    Form(frm): Form<CreatTopic>,
+    Form(frm): Form<CreateTopic>,
 ) -> Result<RedirectView> {
     let handler_name = "backend/topic/add";
     let client = get_client(&state).await.map_err(log_error(handler_name))?;
@@ -55,21 +55,22 @@ pub async fn edit_ui (
 ) -> Result<HtmlView> {
     let handler_name = "backend/topic/edit_ui";
     let client = get_client(&state).await.map_err(log_error(handler_name))?;
-    let cats = category::list(&client, false).await.map_err(log_error(handler_name))?;
+    let cats = category::list(&client).await.map_err(log_error(handler_name))?;
     let item = topic::find_to_edit(&client, id).await.map_err(log_error(handler_name))?;
     let tmpl = Edit { cats, item };
     render(tmpl).map_err(log_error(handler_name))
 }
 
+#[axum_macros::debug_handler]
 pub async fn edit(
     Extension(state): Extension<Arc<AppState>>,
+    Path(id): Path<i64>,
     Form(frm): Form<EditTopic>,
-    Path(id): Path<i64>
 ) -> Result<RedirectView> {
     let handler_name = "backend/topic/edit";
     let client = get_client(&state).await.map_err(log_error(handler_name))?;
     topic::update(&client, &frm, id).await.map_err(log_error(handler_name))?;
-    redirect("/admin/topic/?msg=Successfully Edited Topic")
+    redirect("/admin/topic?msg=Successfully Edited Topic")
 }
 
 pub async fn del(

@@ -15,9 +15,9 @@ pub fn router() -> Router {
         .route("/edit/:id", get(category::edit_ui).post(category::edit));
     let topic_router = Router::new()
         .route("/", get(topic::index))
-        .route("/add", get(topic::add_ui))
+        .route("/add", get(topic::add_ui).post(topic::add))
         .route("/del/:id", get(topic::del))
-        .route("/edit/:id", get(topic::edit_ui));
+        .route("/edit/:id", get(topic::edit_ui).post(topic::edit));
     Router::new()
         .route("/", get(index::index))
         .nest("/category", category_router)

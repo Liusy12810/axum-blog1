@@ -1,6 +1,6 @@
 //! category
 
-use tokio_postgres::Client;
+use tokio_postgres::{types::ToSql, Client};
 
 use crate::{
     error::AppError,
@@ -21,7 +21,7 @@ pub async fn create(client: &Client, frm: &form::CreateCategory) -> Result<Catrg
     // if n > 0 {
     //     return Err(AppError::duplicate("Duplicate category already exists"));
     // }
-    
+
     // super::insert(
     //     client,
     //     "INSERT INTO categories (name, is_del) VALUES ($1, false) RETURNING id",
@@ -42,9 +42,9 @@ pub async fn create(client: &Client, frm: &form::CreateCategory) -> Result<Catrg
             super::del_or_restore(client, "categories", &id, false).await?;
             Ok(CatrgoryID { id })
         }
-        [Category {
-            is_del: false, ..
-        }, ..] => Err(AppError::duplicate("Duplicate category already exists")),
+        [Category { is_del: false, .. }, ..] => {
+            Err(AppError::duplicate("Duplicate category already exists"))
+        }
         [] => {
             super::insert(
                 client,
@@ -57,15 +57,20 @@ pub async fn create(client: &Client, frm: &form::CreateCategory) -> Result<Catrg
     }
 }
 
+async fn list_by_condition(
+    client: &Client,
+    condition: Option<&str>,
+    params: Option<&[&(dyn ToSql + Sync)]>,
+) -> Result<Vec<Category>> {
+    let condition = condition.unwrap_or("");
+    let params = params.unwrap_or(&[]);
+    let sql = format!("SELECT id, name, is_del FROM categories WHERE {} ORDER BY id ASC LIMIT 1000", condition);
+    super::query(client, &sql, params).await
+}
+
 /// list all the existing article.
-pub async fn list(client: &Client, is_del: bool) -> Result<Vec<Category>> {
-    super::query(
-        client,
-        "SELECT id, name, is_del FROM categories WHERE is_del=$1 ORDER BY id ASC LIMIT 1000",
-        // "SELECT id, name, is_del FROM categories ORDER BY id ASC LIMIT 1000",
-        &[&is_del],
-    )
-    .await
+pub async fn list(client: &Client) -> Result<Vec<Category>> {
+    list_by_condition(client, Some("is_del=$1"), Some(&[&false])).await
 }
 
 /// delete or restore the category and its contained articles.

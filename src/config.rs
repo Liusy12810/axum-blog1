@@ -14,9 +14,9 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn from_env() ->Result<Self, config::ConfigError> {
-        let mut cfg = config::Config::new();
-        cfg.merge(config::Environment::new())?;
-        cfg.try_into()
+    pub fn from_env() -> Result<Self, config::ConfigError> {
+        let mut builder = config::Config::builder();
+        builder = builder.add_source(config::Environment::default());
+        builder.build()?.try_deserialize()
     }
 }

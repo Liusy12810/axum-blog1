@@ -15,11 +15,17 @@ pub struct EditCategory {
 }
 
 #[derive(Deserialize)]
-pub struct CreatTopic {
+pub struct CreateTopic {
     pub title: String,
     pub category_id: i32,
     pub summary: String,
     pub markdown: String
 }
 
-pub type EditTopic = CreatTopic;
+pub type EditTopic = CreateTopic;
+
+#[derive(Deserialize)]
+pub struct AdminLogin {
+    pub email: String,
+    pub password: String
+}

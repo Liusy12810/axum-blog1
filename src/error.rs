@@ -5,6 +5,11 @@
 //! 我在这里定义了本程序所需要的错误类型，用于在未来开发过程中和使用过程中报告错误
 //! 由于是联系程序的缘故，所有的错误类型都只实现了基本功能
 
+use axum::{
+    http::{HeaderMap, StatusCode, header},
+    response::IntoResponse,
+};
+
 /// # AppErrorType
 /// > this enum helps us to determine the type of caused error
 ///
@@ -15,6 +20,9 @@ pub enum AppErrorType {
     Template,
     NotFound,
     Duplicate,
+    Crypt,
+    IncorrectLogin,
+    ForBidden,
 }
 
 /// # AppError
@@ -65,6 +73,29 @@ impl AppError {
     pub fn duplicate(msg: &str) -> Self {
         Self::from_str(msg, AppErrorType::Duplicate)
     }
+
+    pub fn incorrect_login() -> Self {
+        Self::from_str("Incorrect E-Mail or Password", AppErrorType::IncorrectLogin)
+    }
+
+    pub fn forbidden() -> Self {
+        Self::from_str("No Access", AppErrorType::ForBidden)
+    }
+
+    pub fn response(self) -> axum::response::Response {
+        match self.types {
+            AppErrorType::ForBidden => {
+                let mut hm = HeaderMap::new();
+                hm.insert(header::LOCATION, "/auth".parse().unwrap());
+                (StatusCode::FOUND, hm, ()).into_response()
+            }
+            _ => self
+                .message
+                .to_owned()
+                .unwrap_or("Error Occur".to_string())
+                .into_response(),
+        }
+    }
 }
 
 impl std::fmt::Display for AppError {
@@ -93,12 +124,14 @@ impl From<askama::Error> for AppError {
     }
 }
 
+impl From<bcrypt::BcryptError> for AppError {
+    fn from(err: bcrypt::BcryptError) -> Self {
+        Self::from_err(Box::new(err), AppErrorType::Crypt)
+    }
+}
+
 impl axum::response::IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
-        let msg = match self.message {
-            Some(msg) => msg.clone(),
-            None => "有错误发生".to_string(),
-        };
-        msg.into_response()
+        self.response()
     }
 }

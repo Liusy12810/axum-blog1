@@ -10,6 +10,9 @@ pub mod model;
 pub mod form;
 pub mod config;
 pub mod md;
+pub mod middleware;
+pub mod password;
+pub mod cookie;
 
 pub type Result<T> = std::result::Result<T, error::AppError>;
 
